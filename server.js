@@ -54,22 +54,16 @@ const getStudentByClassId = (req, res) => {   //Ask about rename columns "Name"
 const postStudent = (req, res) => {
     const { student_name, group_class } = req.body;
 
-    pool
-        .query("SELECT * FROM students WHERE student_name=$1", [student_name])
-        .then((result) => {
-            //console.log(result)
-            if(result.rows.student_name === student_name) {
-                return response
-                .status (400)
-                .send ("A student with the same name already exists");
+    if (student_name) {
+        res.send ("A student with the same name already exists");
             } else { 
     pool
         .query("INSERT INTO students (student_name, group_class) VALUES ($1, $2)", [student_name, group_class])
         .then(() => res.send("Student created!"))
         .catch((e) => console.error (e));
             }
-        })
-}
+        }
+
 
 const postClass = (req, res) => {
     const { name, topic_id, start_time, end_time } = req.body;
@@ -88,6 +82,15 @@ const postTopic = (req, res) => {
         .then(() => res.send("Topic created"))
         .catch((e) => console.error (e));
 } 
+
+const assignStudentToClass = (req, res) => {
+    const { student_id, class_id} = req.body;
+
+    pool
+        .query("INSERT INTO students_classes (student_id, class_id) VALUES ($1, $2)", [student_id, class_id])
+        .then(() => res.send("Student assigned to a class"))
+        .catch((e) => console.error (e));
+}
 //ENDPOINTS
 
 app.get("/classes", getClasses)
@@ -97,5 +100,6 @@ app.get("/students_classes/:classId", getStudentByClassId)
 app.post("/students", postStudent)
 app.post("/classes", postClass)
 app.post("/topics", postTopic)
+app.post("/assign_class", assignStudentToClass)
 
 app.listen(port, () => console.log(`Server is listening on port ${port}.`))
