@@ -46,7 +46,7 @@ const getTopics = (req, res) => {
 const getStudentByClassId = (req, res) => {   //Ask about rename columns "Name"
     const classId = req.params.classId;
     pool
-        .query("SELECT students.student_name, classes.id, classes.name FROM students JOIN students_classes ON students_classes.id=students.id JOIN classes ON students_classes.class_id=classes.id WHERE class_id=$1", [classId])
+        .query("SELECT students.student_name, classes.id, classes.name FROM students JOIN students_classes ON students_classes.student_id=students.id JOIN classes ON students_classes.class_id=classes.id WHERE class_id=$1", [classId])
         .then((results) => res.json(results.rows))
         .catch((e) => console.error(e));
 }
